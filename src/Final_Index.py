@@ -1,4 +1,5 @@
 import shelve
+import json
 
 class Final_Index:
     def __init__(self):
@@ -17,11 +18,59 @@ class Final_Index:
         with shelve.open("final_index") as index:
             print(index[self.name])
 
+    def addToData(self, data, objList):
+        for key, item in objList.items():
+            if key not in data:
+                data[key] = [(x.getID(), x.getFrequencyOfToken(key)) for x in item]
+            else:
+                data[key].append((x.getID(), x.getFrequencyOfToken(key)) for x in item)
+        return data
 
     def dump_to_disk(self, objList):
-        with shelve.open("final_index",  flag="c", protocol=4) as index:
-            for i, j in objList.items():
-                print(i, j)
-                index[i] = j
-                print("done")
+        # with shelve.open("final_index",  flag="c", protocol=4) as index:
+        #     for i, j in objList.items():
+        #         print(i, j)
+        #         index[i] = [x.getID() for x in j]
+        #         print("Yo")
+        #         print(i, index[i])
             # print(list(index.keys()))
+            # for i, j in index.items():
+            #     print(i,j)
+        # with open("../results2.json", "r") as f:
+        #     data = json.load(f)
+        data = {}
+        data = self.addToData(data,objList)
+        with open("../results2.json", "w") as f:
+            json.dump(data, f, indent=1)
+
+    def dump_to_disk_not_empty(self,objList):
+        with open("../results2.json", "r") as f:
+            data = json.load(f)
+        data = self.addToData(data, objList)
+        with open("../results2.json", "w") as f:
+            json.dump(data, f, indent=4)
+            # data = json.load(f)
+            # keys = list(data.keys())
+            # # print(keys)
+            # print(len(keys))  # 387,833 , 1,066,672
+
+    def updateDictData(self, data, dictList):
+        for key, item in dictList:
+            data[key] = item
+
+        with open("../dictList.json", "w") as f:
+            json.dump(data, f, indent=4)
+
+    def update_doc_dict(self, dictList, flag):
+        if flag == 1:
+            #  empty json
+            data = {}
+        else:
+            with open("../dictList.json", "r") as f:
+                data = json.load(f)
+        self.updateDictData(data, dictList)
+
+if __name__ == "__main__":
+    with shelve.open("final_index", flag="c") as index:
+        print("Keys:", list(index.keys()))
+        print("Values:", list(index.values()))

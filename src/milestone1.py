@@ -58,14 +58,12 @@ def run():
 
 
     stemmer = PorterStemmer()
-    AVAILABLE_RAM = psutil.virtual_memory().available
-    RAM_THRESHOLD = AVAILABLE_RAM * 0.7
 
     words = {}
     pages = {}
     partial_index = {}  # token is the key: (Document, frequency)
     final_index = Final_Index()
-    # idsToDict = {}
+    idsToDict = {}
     count = 0
     for json_file in dev_folder.rglob("*.json"):
         with json_file.open("r") as file:
@@ -78,6 +76,7 @@ def run():
             stemmed_tokens = [stemmer.stem(i) for i in tokenizeline(html_string)]
 
             newDoc = Document(count, url, {}, encoding)
+            idsToDict[newDoc.getID()] = newDoc.getUrl()
             for i in stemmed_tokens:
                 newDoc.getTokensAndFreq()[i] = newDoc.getTokensAndFreq().get(i, 0) + 1  # document dict has token
                 # as key and frequency as value
@@ -88,20 +87,27 @@ def run():
                     partial_index[i].append(newDoc)
 
         count += 1
-        print(sys.getsizeof(partial_index))
-        print(RAM_THRESHOLD)
-
-        if count > 5:
-            print("im above threshold, dumping stuff")
-            print(partial_index)
+        if count == 1000:
+            # print("im above threshold, dumping stuff")
+            # print(partial_index)
             final_index.dump_to_disk(partial_index)
+            final_index.update_doc_dict(idsToDict, flag=1)
             partial_index = {}
+            idsToDict = {}
+        elif count > 2000 and count % 1000 == 0:
+            final_index.dump_to_disk_not_empty(partial_index)
+            final_index.update_doc_dict(idsToDict, flag=0)
+            partial_index = {}
+            idsToDict = {}
 
-    final_index.dump_to_disk(partial_index)
+    final_index.dump_to_disk_not_empty(partial_index)
+    final_index.update_doc_dict(idsToDict, flag=0)
+    partial_index = {}
+    idsToDict = {}
 
 
 if __name__ == "__main__":
-    # run()
+    run()
     # with open("../results.json", "r") as f:
     #     data = json.load(f)
     #     keys = list(data.keys())
@@ -114,5 +120,6 @@ if __name__ == "__main__":
     #     # print(keys)
     #     print(len(keys))  # 54,879 # 55,086
     # pd.
-    with shelve.open("final_index") as a:
-        print(list(a.keys()))
+    # with shelve.open("final_index2") as a:
+    #     # a["hi"] = Document(9, "j", {}, "i")
+    #     print(a["hi"])
