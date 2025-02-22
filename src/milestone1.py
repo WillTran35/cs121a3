@@ -3,8 +3,11 @@ from nltk.stem import PorterStemmer
 import json
 from pathlib import Path
 from bs4 import BeautifulSoup
-import pandas as pd
 from Document import Document
+from Final_Index import Final_Index
+import psutil
+import sys
+
 
 def tokenizeline(line:str) -> list:
     """Helper function to tokenize an individual line."""
@@ -25,14 +28,12 @@ def tokenizeline(line:str) -> list:
         result.append(string)
     return result
 
-def tokenize(file_path:str) -> list:
-    # This function runs in O(n) time complexity because it takes each line and passes into tokenizeline() which runs in
-    # O(n) complexity
-    result = []
-    with open(file_path, "r") as line:
-        for i in line:
-            result += tokenizeline(i)
-    return result
+def dumpToFinalIndex(words: dict):
+    try:
+        with open("../results.json", "w") as f:
+            json.dump(words, f, indent=4)
+    except Exception as e :
+        print(e)
 
 def parseHTML(html: str):
     soup = BeautifulSoup(html, "html.parser" )
@@ -54,13 +55,16 @@ def run():
 
     dev_folder = Path("/Users/willtran/Downloads/DEV")
 
-    stemmer = PorterStemmer()
 
-    # with open("../results.json", "r") as f:
-    #     results: dict = json.load(f)
+    stemmer = PorterStemmer()
+    AVAILABLE_RAM = psutil.virtual_memory().available
+    RAM_THRESHOLD = AVAILABLE_RAM * 0.7
+
     words = {}
     pages = {}
-    partial_index = {}
+    partial_index = {}  # token is the key: (Document, frequency)
+    final_index = Final_Index()
+    # idsToDict = {}
     count = 0
     for json_file in dev_folder.rglob("*.json"):
         with json_file.open("r") as file:
@@ -74,44 +78,36 @@ def run():
 
             newDoc = Document(count, url, {}, encoding)
             for i in stemmed_tokens:
-                if i not in newDoc.getTokensAndFreq():
-                    newDoc.getTokensAndFreq()[i] = newDoc.getTokensAndFreq().get(i,0) + 1
+                newDoc.getTokensAndFreq()[i] = newDoc.getTokensAndFreq().get(i, 0) + 1  # document dict has token
+                # as key and frequency as value
+            for i in newDoc.getTokensAndFreq().keys():
+                if i not in partial_index:
+                    partial_index[i] = [newDoc]
+                else:
+                    partial_index[i].append(newDoc)
 
-                # if url not in pages:
-                #     pages[url] = {}
-                #     pages[url][i] = 1
-                # else:
-                #     pages[url][i] = pages[url].get(i, 0) + 1
-                # print(pages)
-                # print(words)
-            count += 1
-            partial_index[newDoc.getID()] = newDoc
-    for i in words:
-        words[i] = list(words[i])
-    print(count)
+        count += 1
 
-    try:
-        with open("../results.json", "w") as f:
-            json.dump(words, f, indent =4)
-        with open("../pages.json", "w") as f:
-            json.dump(pages, f, indent=4)
-    except Exception as e:
-        print(e)
-        # print(words)
+        if sys.getsizeof(partial_index) > RAM_THRESHOLD:
+            print("im above threshold, dumping stuff")
+            print(partial_index)
+            final_index.dump_to_disk(partial_index)
+            partial_index = {}
+
 
 
 
 if __name__ == "__main__":
     run()
-    with open("../results.json", "r") as f:
-        data = json.load(f)
-        keys = list(data.keys())
-        # print(keys)
-        print(len(keys))  # 387,833 , 1,066,672
-
-    with open("../pages.json") as f:
-        data = json.load(f)
-        keys = list(data.keys())
-        # print(keys)
-        print(len(keys))  # 54,879 # 55,086
+    # with open("../results.json", "r") as f:
+    #     data = json.load(f)
+    #     keys = list(data.keys())
+    #     # print(keys)
+    #     print(len(keys))  # 387,833 , 1,066,672
+    #
+    # with open("../pages.json") as f:
+    #     data = json.load(f)
+    #     keys = list(data.keys())
+    #     # print(keys)
+    #     print(len(keys))  # 54,879 # 55,086
     # pd.
