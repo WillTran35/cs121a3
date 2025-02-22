@@ -20,10 +20,8 @@ class Final_Index:
 
     def addToData(self, data, objList):
         for key, item in objList.items():
-            if key not in data:
-                data[key] = [(x.getID(), x.getFrequencyOfToken(key)) for x in item]
-            else:
-                data[key].append((x.getID(), x.getFrequencyOfToken(key)) for x in item)
+            data[key] = {x.getID(): x.getFrequencyOfToken(key) for x in item}
+
         return data
 
     def dump_to_disk(self, objList):
@@ -55,7 +53,7 @@ class Final_Index:
             # print(len(keys))  # 387,833 , 1,066,672
 
     def updateDictData(self, data, dictList):
-        for key, item in dictList:
+        for key, item in dictList.items():
             data[key] = item
 
         with open("../dictList.json", "w") as f:
@@ -70,7 +68,24 @@ class Final_Index:
                 data = json.load(f)
         self.updateDictData(data, dictList)
 
+    def getNumTokens(self):
+        with open("../results2.json", "r") as f:
+            data = json.load(f)
+            return len(list(data.keys()))
+
+
+    def getNumDocuments(self):
+        with open("../dictList.json", "r") as f:
+            data = json.load(f)
+            return len(list(data.keys()))
+
 if __name__ == "__main__":
-    with shelve.open("final_index", flag="c") as index:
-        print("Keys:", list(index.keys()))
-        print("Values:", list(index.values()))
+    with open("../results2.json", "r") as f:
+        data = json.load(f)
+        print("Tokens: " + str(len(list(data.keys()))))
+
+    with open("../dictList.json", "r") as f:
+        data = json.load(f)
+        print("Unique Documents: " + str(len(list(data.keys()))))
+
+
