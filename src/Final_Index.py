@@ -19,9 +19,9 @@ class Final_Index:
 
 
     def dump_to_disk(self, objList):
-        with shelve.open("final_index") as index:
-            if self.name not in index:
-                index[self.name] = []
-            temp = []
-            temp.append(objList)
-            index[self.name] = temp
+        with shelve.open("final_index",  flag="c", protocol=4) as index:
+            for i, j in objList.items():
+                print(i, j)
+                index[i] = j
+                print("done")
+            # print(list(index.keys()))

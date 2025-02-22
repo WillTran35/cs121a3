@@ -7,6 +7,7 @@ from Document import Document
 from Final_Index import Final_Index
 import psutil
 import sys
+import shelve
 
 
 def tokenizeline(line:str) -> list:
@@ -87,18 +88,20 @@ def run():
                     partial_index[i].append(newDoc)
 
         count += 1
+        print(sys.getsizeof(partial_index))
+        print(RAM_THRESHOLD)
 
-        if sys.getsizeof(partial_index) > RAM_THRESHOLD:
+        if count > 5:
             print("im above threshold, dumping stuff")
             print(partial_index)
             final_index.dump_to_disk(partial_index)
             partial_index = {}
 
-
+    final_index.dump_to_disk(partial_index)
 
 
 if __name__ == "__main__":
-    run()
+    # run()
     # with open("../results.json", "r") as f:
     #     data = json.load(f)
     #     keys = list(data.keys())
@@ -111,3 +114,5 @@ if __name__ == "__main__":
     #     # print(keys)
     #     print(len(keys))  # 54,879 # 55,086
     # pd.
+    with shelve.open("final_index") as a:
+        print(list(a.keys()))
