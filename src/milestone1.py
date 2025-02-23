@@ -5,9 +5,7 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 from Document import Document
 from Final_Index import Final_Index
-import psutil
-import sys
-import shelve
+import MergeMethods
 
 
 def tokenizeline(line:str) -> list:
@@ -87,21 +85,16 @@ def run():
                     partial_index[i].append(newDoc)
 
         count += 1
-        if count == 1000:
-            # print("im above threshold, dumping stuff")
-            # print(partial_index)
-            final_index.dump_to_disk(partial_index)
-            final_index.update_doc_dict(idsToDict, flag=1)
-            partial_index = {}
-            idsToDict = {}
-        elif count > 2000 and count % 1000 == 0:
-            final_index.dump_to_disk_not_empty(partial_index)
-            final_index.update_doc_dict(idsToDict, flag=0)
+        if count % 10000 == 0:
+            MergeMethods.createNewPartialJson(count, partial_index)
+            # final_index.update_doc_dict(idsToDict, flag=1)
+            MergeMethods.createNewDictPartialJson(count, idsToDict)
             partial_index = {}
             idsToDict = {}
 
-    final_index.dump_to_disk_not_empty(partial_index)
-    final_index.update_doc_dict(idsToDict, flag=0)
+    # final_index.dump_to_disk_not_empty(partial_index)
+    MergeMethods.createNewPartialJson(count, partial_index)
+    MergeMethods.createNewDictPartialJson(count,idsToDict)
     partial_index = {}
     idsToDict = {}
 

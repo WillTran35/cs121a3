@@ -1,5 +1,6 @@
 import shelve
 import json
+import os
 
 class Final_Index:
     def __init__(self):
@@ -20,8 +21,10 @@ class Final_Index:
 
     def addToData(self, data, objList):
         for key, item in objList.items():
-            data[key] = {x.getID(): x.getFrequencyOfToken(key) for x in item}
-
+            if key in data:
+                data[key].update({x.getID(): x.getFrequencyOfToken(key) for x in item})
+            else :
+                data[key] = {x.getID(): x.getFrequencyOfToken(key) for x in item}
         return data
 
     def dump_to_disk(self, objList):
@@ -83,9 +86,20 @@ if __name__ == "__main__":
     with open("../results2.json", "r") as f:
         data = json.load(f)
         print("Tokens: " + str(len(list(data.keys()))))
+        # print(len(data["class"]))
+        print("Size: " + str(os.path.getsize("../results2.json")))  #  306,840.63 KB, 299.26 MB
 
     with open("../dictList.json", "r") as f:
         data = json.load(f)
         print("Unique Documents: " + str(len(list(data.keys()))))
 
-
+    with shelve.open("final_index") as f:
+        with open("../results2.json", "r") as res:
+            # dat /a = json.load(res)
+            for line in res:
+                try:
+                    data = json.load(line.strip())  # Convert line to dictionary
+                    for key, item in data.items():
+                        f[key] = item  # Store in shelve
+                except json.JSONDecodeError as e:
+                    print(f"Skipping invalid JSON: {e}")
