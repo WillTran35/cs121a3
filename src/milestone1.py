@@ -100,7 +100,8 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    # run()
+    MergeMethods.MergeAll(Path("jsonFolder/"))
     # with open("../results.json", "r") as f:
     #     data = json.load(f)
     #     keys = list(data.keys())

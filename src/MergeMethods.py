@@ -1,4 +1,8 @@
 import json
+import re
+
+pattern = r'Doc\d+'
+
 def createNewPartialJson(count, partial_index):
     with open(f"jsonFolder/{count - 10000}-{count}.json", "w") as f:
         data = {}
@@ -16,4 +20,51 @@ def createNewDictPartialJson(count, dictList):
             data[key] = item
         json.dump(data, f, indent=1)
 
+def createIndexOfIndexes(json_index_file, index_of_index_file):
+    indexOfIndex = {}
+    pass
 
+
+def findAllValues(folder, target):
+    result = {}
+    for json_file in folder.rglob("*.json"):
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            for key, value in data.items():
+                if key == target:
+                    # print("im in here ", key)
+                    if key not in result:
+                        result[key] = value
+                    else:
+                        result[key].update(value)
+    result[target] = dict(sorted(result[target].items(), key = lambda item: item[1], reverse=True))
+    print(result)
+    return result
+
+def getAllUniqueTerms(folder):
+    terms = set()
+    for json_file in folder.rglob("*.json"):
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            for key in data.keys():
+                terms.add(key)
+    return terms
+
+
+def MergeAll(folder):
+    count = 0
+    terms = getAllUniqueTerms(folder)
+    print(len(terms))
+    for key in terms:
+        mydict = findAllValues(folder, key)
+        with open("finalIndex/MergedIndex.jsonl", "a") as d:
+            json.dump(mydict, d)
+            count += 1
+            print(count)
+            d.write("\n")
+            d.write("\n")
+            print("im done!")
+            mydict = {}
+
+        # mydict = {} # clear dictionary
+        # createIndexOfIndexes(json_file, "finalIndex/IndexOfIndexes.json")
