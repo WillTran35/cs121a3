@@ -93,15 +93,16 @@ def run():
             idsToDict = {}
 
     # final_index.dump_to_disk_not_empty(partial_index)
-    MergeMethods.createNewPartialJson(count, partial_index)
-    MergeMethods.createNewDictPartialJson(count,idsToDict)
+    if partial_index:
+        MergeMethods.createNewPartialJson(count, partial_index)
+        MergeMethods.createNewDictPartialJson(count,idsToDict)
     partial_index = {}
     idsToDict = {}
 
 
 if __name__ == "__main__":
-    # run()
-    MergeMethods.MergeAll(Path("jsonFolder/"))
+    run()
+    # MergeMethods.MergeAll(Path("jsonFolder/"))
     # MergeMethods.mergeDict(Path("DictJsonFolder/"))
     # with open("../results.json", "r") as f:
     #     data = json.load(f)
