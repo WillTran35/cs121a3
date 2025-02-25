@@ -30,13 +30,12 @@ def findAllValues(folder, target):
     for json_file in folder.rglob("*.json"):
         with open(json_file, "r") as f:
             data = json.load(f)
-            for key, value in data.items():
-                if key == target:
-                    # print("im in here ", key)
-                    if key not in result:
-                        result[key] = value
-                    else:
-                        result[key].update(value)
+            if target in data:
+                if target not in result:
+                    result[target] = data[target]
+                else:
+                    result[target].update(data[target])
+
     result[target] = dict(sorted(result[target].items(), key = lambda item: item[1], reverse=True))
     print(result)
     return result
