@@ -85,6 +85,22 @@ def getAllUniqueTerms(folder):
 
     return terms
 
+def getAllPositionsOfWord(folder, word):
+    result = []
+    count = 0
+    for json_file in folder.rglob("*.jsonl"):
+        with open(json_file, "r") as f:
+            for line in f:
+                data = json.loads(line)
+                if data["term"] == word.casefold():
+                    result.append((count, data["position"]))
+                    print("got one")
+                    count += 1
+                    break
+
+    return result
+
+
 
 def MergeAll(folder):
     count = 0
