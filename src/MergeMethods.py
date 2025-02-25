@@ -3,11 +3,26 @@ import re
 
 pattern = r'Doc\d+'
 
+def sortPartialIndex(partial_index):
+    #  need to sort based on term
+    #  then sort based on frequency
+    index = {}
+    for key, item in partial_index.items():
+        index[key] = {x.getID(): x.getFrequencyOfToken(key) for x in item}
+
+    sorted_index = dict(sorted(index.items(), key = lambda x : x[0]))
+    print(sorted_index)
+    sorted_index2 = {key: dict(sorted(value.items(), key=lambda x: x[1], reverse=True)) for key, value in sorted_index.items()}
+    print(sorted_index2)
+    return sorted_index2
+
 def createNewPartialJson(count, partial_index):
     with open(f"jsonFolder/{count - 10000}-{count}.jsonl", "w") as f:
         # data = {}
-        for key, item in partial_index.items():
-            data = {"term": key, "index": {x.getID(): x.getFrequencyOfToken(key) for x in item}}
+        partial_index = sortPartialIndex(partial_index)
+        for key, value in partial_index.items():
+            # data = {"term": key, "index": {x.getID(): x.getFrequencyOfToken(key) for x in item}}
+            data = {"term": key, "index": value}
             json.dump(data, f)
             f.write('\n')
 
@@ -23,6 +38,23 @@ def createIndexOfIndexes(json_index_file, index_of_index_file):
     indexOfIndex = {}
     pass
 
+def sortJsonLkeys(folder):
+    for json_file in folder.rglob("*.jsonl"):
+        print(f"sorting {json_file}")
+        with open(json_file, "r") as f:
+            lines = f.readlines()
+            print("done reading lines")
+        parsed_data = [json.loads(line) for line in lines]
+        print("done parsing")
+        sorted_data = sorted(parsed_data, key=lambda x: x["term"])
+
+        print("sorting")
+        with open(json_file,"w") as w:
+            # w.writelines(sorted_data)
+            for item in sorted_data:
+                json.dump(item, w)
+                w.write('\n')
+        print(f"sorted {json_file}")
 
 def findAllValues(folder, target):
     result = {}
