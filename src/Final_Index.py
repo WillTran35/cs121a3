@@ -93,13 +93,3 @@ if __name__ == "__main__":
         data = json.load(f)
         print("Unique Documents: " + str(len(list(data.keys()))))
 
-    with shelve.open("final_index") as f:
-        with open("../results2.json", "r") as res:
-            # dat /a = json.load(res)
-            for line in res:
-                try:
-                    data = json.load(line.strip())  # Convert line to dictionary
-                    for key, item in data.items():
-                        f[key] = item  # Store in shelve
-                except json.JSONDecodeError as e:
-                    print(f"Skipping invalid JSON: {e}")

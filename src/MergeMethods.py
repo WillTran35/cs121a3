@@ -15,3 +15,5 @@ def createNewDictPartialJson(count, dictList):
         for key, item in dictList.items():
             data[key] = item
         json.dump(data, f, indent=1)
+
+
