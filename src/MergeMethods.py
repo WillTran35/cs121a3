@@ -1,7 +1,4 @@
 import json
-import re
-
-pattern = r'Doc\d+'
 
 def sortPartialIndex(partial_index):
     #  need to sort based on term
@@ -11,9 +8,9 @@ def sortPartialIndex(partial_index):
         index[key] = {x.getID(): x.getFrequencyOfToken(key) for x in item}
 
     sorted_index = dict(sorted(index.items(), key = lambda x : x[0]))
-    print(sorted_index)
+    # print(sorted_index)
     sorted_index2 = {key: dict(sorted(value.items(), key=lambda x: x[1], reverse=True)) for key, value in sorted_index.items()}
-    print(sorted_index2)
+    # print(sorted_index2)
     return sorted_index2
 
 def createNewPartialJson(count, partial_index):
@@ -34,27 +31,34 @@ def createNewDictPartialJson(count, dictList):
             json.dump(data, f)
             f.write('\n')
 
-def createIndexOfIndexes(json_index_file, index_of_index_file):
-    indexOfIndex = {}
-    pass
 
-def sortJsonLkeys(folder):
+def createIndexOfIndexes(folder):
+    count = 0
+    index = {}
     for json_file in folder.rglob("*.jsonl"):
-        print(f"sorting {json_file}")
-        with open(json_file, "r") as f:
-            lines = f.readlines()
-            print("done reading lines")
-        parsed_data = [json.loads(line) for line in lines]
-        print("done parsing")
-        sorted_data = sorted(parsed_data, key=lambda x: x["term"])
+        # i want to create an index of indexes for each partial index, so when i merge, i look through
+        # the index of indexes and get to the position in each partial index
+        with open(json_file, "rb") as f:
+            position = 0
 
-        print("sorting")
-        with open(json_file,"w") as w:
-            # w.writelines(sorted_data)
-            for item in sorted_data:
-                json.dump(item, w)
-                w.write('\n')
-        print(f"sorted {json_file}")
+            for line in f:
+                decodedLine = line.decode("utf-8").strip()
+                if not decodedLine:
+                    continue
+
+                data = json.loads(decodedLine)
+                term = data["term"]
+                index[term] = position
+                position = f.tell()  # position for next line
+            with open(f"IndexOfIndexes/{count}-IndexOfIndexes.jsonl", "w") as a:
+                for key, value in index.items():
+                    data = {"term" :key, "position":  value}
+                    json.dump(data, a)
+                    a.write('\n')
+            count += 1
+
+
+
 
 def findAllValues(folder, target):
     result = {}

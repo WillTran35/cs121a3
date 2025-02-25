@@ -102,7 +102,8 @@ def run():
 
 if __name__ == "__main__":
     # run()
-    print(len(MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))))
+    # print(len(MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))))
+    MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
     # MergeMethods.sortJsonLkeys(Path("jsonFolder/"))
     # MergeMethods.MergeAll(Path("jsonFolder/"))
     # MergeMethods.mergeDict(Path("DictJsonFolder/"))
