@@ -73,11 +73,12 @@ def findAllValues(folder, target):
 
 def getAllUniqueTerms(folder):
     terms = set()
-    for json_file in folder.rglob("*.json"):
+    for json_file in folder.rglob("*.jsonl"):
         with open(json_file, "r") as f:
-            data = json.load(f)
-            for key in data.keys():
-                terms.add(key)
+            for line in f:
+                data = json.loads(line)
+                terms.add(data["term"])
+
     return terms
 
 
