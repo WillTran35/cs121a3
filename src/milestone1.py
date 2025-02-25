@@ -102,6 +102,7 @@ def run():
 if __name__ == "__main__":
     # run()
     MergeMethods.MergeAll(Path("jsonFolder/"))
+    # MergeMethods.mergeDict(Path("DictJsonFolder/"))
     # with open("../results.json", "r") as f:
     #     data = json.load(f)
     #     keys = list(data.keys())

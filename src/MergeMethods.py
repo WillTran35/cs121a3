@@ -67,3 +67,24 @@ def MergeAll(folder):
 
         # mydict = {} # clear dictionary
         # createIndexOfIndexes(json_file, "finalIndex/IndexOfIndexes.json")
+
+
+def mergeDict(folder):
+    count = 0
+    for json_file in folder.rglob("*.json"):
+        with open(json_file, "r") as f:
+            data = json.load(f)
+            dict = {}
+            for key,value in data.items():
+                dict[key] = value
+            with open("finalIndex/MergedDictIndex.jsonl", "a") as d:
+                json.dump(dict, d)
+                d.write ("\n")
+        print("finished")
+    with open("finalIndex/MergedDictIndex.jsonl", "r") as d:
+        data = {}
+        for line in d:
+            entry = json.loads(line)  # Load each line as a separate JSON object
+            data.update(entry)  # Merge each dictionary into one
+
+        print(len(list(data.keys())))
