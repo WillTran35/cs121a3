@@ -34,8 +34,8 @@ def dumpToFinalIndex(words: dict):
     except Exception as e :
         print(e)
 
-def parseHTML(html: str):
-    soup = BeautifulSoup(html, "html.parser" )
+def parseHTML(html: str, encoding):
+    soup = BeautifulSoup(html, "html.parser", from_encoding=encoding)
 
     for script in soup(["script", "style"]):
         script.decompose()
@@ -70,7 +70,7 @@ def run():
             html = data['content']
             encoding = data['encoding']
             print(url)
-            html_string = parseHTML(html)
+            html_string = parseHTML(html, encoding)
             stemmed_tokens = [stemmer.stem(i) for i in tokenizeline(html_string)]
 
             newDoc = Document(count, url, {}, encoding)
@@ -105,7 +105,10 @@ if __name__ == "__main__":
     # print(len(MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))))
     # MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
     # MergeMethods.sortJsonLkeys(Path("jsonFolder/"))
-    print(MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "ICS"))
+    # print(MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "ACM"))
+    #  [(4, 508797), (1, 12332), (5, 371817), (0, 9242), (3, 63261), (2, 45897)]
+    print(MergeMethods.returnJsonObjectAtPos(2, 45897))
+    # print(MergeMethods.getLines())
     # MergeMethods.MergeAll(Path("jsonFolder/"))
     # MergeMethods.mergeDict(Path("DictJsonFolder/"))
     # with open("../results.json", "r") as f:

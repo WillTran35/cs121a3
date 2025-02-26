@@ -1,5 +1,16 @@
 import json
+import linecache
+indexDict = {0: "jsonFolder/0-10000.jsonl", 1: "jsonFolder/10000-20000.jsonl",
+             2: "jsonFolder/20000-30000.jsonl", 3: "jsonFolder/30000-40000.jsonl",
+             4: "jsonFolder/40000-50000.jsonl", 5: "jsonFolder/45393-55393.jsonl"}
 
+countDict = {"jsonFolder/0-10000.jsonl": 0, "jsonFolder/10000-20000.jsonl": 1,
+            "jsonFolder/20000-30000.jsonl": 2, "jsonFolder/30000-40000.jsonl": 3,
+             "jsonFolder/40000-50000.jsonl": 4, "jsonFolder/45393-55393.jsonl": 5}
+
+indexOfIndexDict = {"IndexOfIndexes/0-IndexOfIndexes.jsonl": 0, "IndexOfIndexes/1-IndexOfIndexes.jsonl": 1,
+                    "IndexOfIndexes/2-IndexOfIndexes.jsonl": 2, "IndexOfIndexes/3-IndexOfIndexes.jsonl": 3,
+                    "IndexOfIndexes/4-IndexOfIndexes.jsonl": 4, "IndexOfIndexes/5-IndexOfIndexes.jsonl": 5}
 def sortPartialIndex(partial_index):
     #  need to sort based on term
     #  then sort based on frequency
@@ -34,28 +45,31 @@ def createNewDictPartialJson(count, dictList):
 
 def createIndexOfIndexes(folder):
     count = 0
-    index = {}
+
     for json_file in folder.rglob("*.jsonl"):
         # i want to create an index of indexes for each partial index, so when i merge, i look through
         # the index of indexes and get to the position in each partial index
-        with open(json_file, "rb") as f:
-            position = 0
+        index = {}
+        with open(json_file, "r", encoding="ascii") as f:
+            print(json_file, countDict[str(json_file)])
 
-            for line in f:
-                decodedLine = line.decode("utf-8").strip()
-                if not decodedLine:
+            for line_num, line in enumerate(f, start=1):
+                decoded_line = line.strip()
+                print(line_num)
+                if not decoded_line:
+                    print("not decoded line")
                     continue
 
-                data = json.loads(decodedLine)
+                data = json.loads(decoded_line)
                 term = data["term"]
-                index[term] = position
-                position = f.tell()  # position for next line
-            with open(f"IndexOfIndexes/{count}-IndexOfIndexes.jsonl", "w") as a:
+                index[term] = line_num
+
+            with open(f"IndexOfIndexes/{countDict[str(json_file)]}-IndexOfIndexes.jsonl", "w") as a:
                 for key, value in index.items():
-                    data = {"term" :key, "position":  value}
+                    data = {"term": key, "position":  value}
                     json.dump(data, a)
                     a.write('\n')
-            count += 1
+            # count += 1
 
 
 
@@ -87,31 +101,34 @@ def getAllUniqueTerms(folder):
 
 def getAllPositionsOfWord(folder, word):
     result = []
-    count = 0
     for json_file in folder.rglob("*.jsonl"):
+        # print(json_file)
         with open(json_file, "r") as f:
             for line in f:
                 data = json.loads(line)
                 if data["term"] == word.casefold():
-                    result.append((count, data["position"]))
-                    print("got one")
-                    count += 1
+                    # print(data["term"], data["position"])
+                    result.append((indexOfIndexDict[str(json_file)], data["position"]))
+                    # print("got one")
                     break
 
     return result
 
+def returnJsonObjectAtPos(file_num, position):
+    with open(indexDict[file_num], "rb") as w:
+        line = linecache.getline(indexDict[file_num], position).strip()
+        print(line)
+        return json.loads(line)["index"]
 
 
 def MergeAll(folder):
-    count = 0
-    terms = getAllUniqueTerms(folder)
+    terms = sorted(getAllUniqueTerms(folder))
     print(len(terms))
+    # indexDict = {1: }
     for key in terms:
         mydict = findAllValues(folder, key)
         with open("finalIndex/MergedIndex.jsonl", "a") as d:
             json.dump(mydict, d)
-            count += 1
-            print(count)
             d.write("\n")
             d.write("\n")
             print("im done!")
@@ -140,3 +157,8 @@ def mergeDict(folder):
             data.update(entry)  # Merge each dictionary into one
 
         print(len(list(data.keys())))
+
+def getLines():
+    with open(indexDict[0] ,"r") as w:
+        count = sum(1 for _ in w)
+    return count
