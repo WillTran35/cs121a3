@@ -110,12 +110,24 @@ if __name__ == "__main__":
     # x = MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "stekler")
     # print(x)
     # print(MergeMethods.returnJsonObjectAtPos(2, 45898))
-    MergeMethods.prioQ()
+    # MergeMethods.prioQ()
     # end = time.time()
     # print(end-start)
     # term = MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))
     # word_set = set()
-    with open("finalIndex/final_IndexFINAL.jsonl", "r") as w:
+    # with open("finalIndex/final_IndexFINAL.jsonl", "r") as w:
+    #     count = 1
+    #
+    #     while True:
+    #         line = w.readline()
+    #
+    #         if not line:
+    #             break
+    #
+    #         count += 1
+    #     print(count)
+    MergeMethods.createFinalIndexOfIndexes()
+    with open("IndexOfIndexes/final-IndexOfIndexes.jsonl", "r") as w:
         count = 1
 
         while True:
@@ -126,4 +138,5 @@ if __name__ == "__main__":
 
             count += 1
         print(count)
+
 

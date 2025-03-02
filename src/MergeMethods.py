@@ -84,6 +84,21 @@ def sortByFreq(mydict):
     x = list(mydict.values())
     return dict(sorted(mydict.items(), key=lambda x: x[1], reverse=True))
 
+def createFinalIndexOfIndexes():
+    with open("finalIndex/final_IndexFINAL.jsonl", "r") as a,\
+            open("IndexOfIndexes/final-IndexOfIndexes.jsonl", "w") as b:
+        count = 1
+        while True:
+            line = a.readline()
+            if not line:
+                break
+            term = json.loads(line)["term"]
+            term_loc_dict = {"term": term, "position": count}
+            json.dump(term_loc_dict, b)
+            b.write('\n')
+            count += 1
+
+
 
 
 def getAllUniqueTerms(folder):
