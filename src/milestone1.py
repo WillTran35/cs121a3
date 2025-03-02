@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from Document import Document
 from Final_Index import Final_Index
 import MergeMethods
-
+import time
 
 def tokenizeline(line:str) -> list:
     """Helper function to tokenize an individual line."""
@@ -105,24 +105,25 @@ if __name__ == "__main__":
     # print(len(MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))))
     # MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
     # MergeMethods.sortJsonLkeys(Path("jsonFolder/"))
-    # print(MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "ACM"))
-    #  [(4, 508797), (1, 12332), (5, 371817), (0, 9242), (3, 63261), (2, 45897)]
-    print(MergeMethods.returnJsonObjectAtPos(2, 45897))
-    # print(MergeMethods.getLines())
-    # MergeMethods.MergeAll(Path("jsonFolder/"))
-    # MergeMethods.mergeDict(Path("DictJsonFolder/"))
-    # with open("../results.json", "r") as f:
-    #     data = json.load(f)
-    #     keys = list(data.keys())
-    #     # print(keys)
-    #     print(len(keys))  # 387,833 , 1,066,672
-    #
-    # with open("../pages.json") as f:
-    #     data = json.load(f)
-    #     keys = list(data.keys())
-    #     # print(keys)
-    #     print(len(keys))  # 54,879 # 55,086
-    # pd.
-    # with shelve.open("final_index2") as a:
-    #     # a["hi"] = Document(9, "j", {}, "i")
-    #     print(a["hi"])
+    start = time.time()
+    # MergeMethods.prioQ()
+    # x = MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "stekler")
+    # print(x)
+    # print(MergeMethods.returnJsonObjectAtPos(2, 45898))
+    MergeMethods.prioQ()
+    # end = time.time()
+    # print(end-start)
+    # term = MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))
+    # word_set = set()
+    with open("finalIndex/final_IndexFINAL.jsonl", "r") as w:
+        count = 1
+
+        while True:
+            line = w.readline()
+
+            if not line:
+                break
+
+            count += 1
+        print(count)
+

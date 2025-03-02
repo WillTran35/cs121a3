@@ -1,7 +1,7 @@
 import shelve
 import json
 import os
-
+from MergeMethods import sortByFreq
 class Final_Index:
     def __init__(self):
         self.name = "main"
@@ -39,17 +39,21 @@ class Final_Index:
             #     print(i,j)
         # with open("../results2.json", "r") as f:
         #     data = json.load(f)
-        data = {}
-        data = self.addToData(data,objList)
-        with open("../results2.json", "w") as f:
-            json.dump(data, f, indent=1)
+        # data = {}
+        # data = self.addToData(data, objList)
+        with open("../FinalMerged.jsonl", "w") as f:
+            for key, value in objList.items():
+                objList[key] = objList[key] = sortByFreq(objList[key])
+                data = {"term": key, "index": value}
+                json.dump(data, f)
+                f.write('\n')
 
     def dump_to_disk_not_empty(self,objList):
-        with open("../results2.json", "r") as f:
+        with open("../FinalMerged.jsonl", "r") as f:
             data = json.load(f)
         data = self.addToData(data, objList)
-        with open("../results2.json", "w") as f:
-            json.dump(data, f, indent=4)
+        with open("../FinalMerged.jsonl", "w") as f:
+            json.dump(data, f)
             # data = json.load(f)
             # keys = list(data.keys())
             # # print(keys)
