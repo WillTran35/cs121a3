@@ -53,6 +53,7 @@ def run():
             encoding = data['encoding']
             print(url)
             html_string = parseHTML(html, encoding)
+            length_of_doc = len(html_string)
             stemmed_tokens = [stemmer.stem(i) for i in tokenizeline(html_string)]
 
             newDoc = Document(count, url, {}, encoding)
@@ -60,7 +61,10 @@ def run():
             for i in stemmed_tokens:
                 newDoc.getTokensAndFreq()[i] = newDoc.getTokensAndFreq().get(i, 0) + 1  # document dict has token
                 # as key and frequency as value
+
+
             for i in newDoc.getTokensAndFreq().keys():
+                newDoc.getTokensAndFreq()[i] = newDoc.getFrequencyOfToken(i) / length_of_doc  # tf score
                 if i not in partial_index:
                     partial_index[i] = [newDoc]
                 else:
@@ -83,11 +87,11 @@ def run():
 
 
 if __name__ == "__main__":
-    # run()
-    # MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
-    # MergeMethods.sortJsonLkeys(Path("jsonFolder/"))
     start = time.time()
-    # MergeMethods.prioQ()
+    run()
+    MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
+    MergeMethods.prioQ()
+    MergeMethods.createFinalIndexOfIndexes()
     x = searchMethods.querySearch("machine learning")
     # x = searchMethods.getPosition("softwar", 7)
     print(x)

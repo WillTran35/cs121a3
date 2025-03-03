@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
+
 def getPosition(target, index):
     #  {"term": "chichiest", "position": 773775}
     length = len(target)
@@ -32,7 +33,6 @@ def getItem(line):
     target = linecache.getline(indexDict[6], line)
     obj = json.loads(target)["index"]
     result = []
-    # print(f"THIS IS OBJ.KEYS {obj.keys()}")
     for i in obj.keys():
         result.append((i, obj[i]))
     # print(result)
@@ -60,17 +60,11 @@ def querySearch(query):
             result[i] = getAllPositionsOfWord(i)
         else:
             result[i] += getAllPositionsOfWord(i)
-        # result[i].append(getAllPositionsOfWord(i))
     # print(result)
-    # result_sorted = sorted(result, key=lambda x: len(x[0]))w
     x = andDocs(result)
-    # print(x)
-    # if x:
-    #     print(f"got intersections: {x}")
-    #     return x
-    # return -1
-    # print(result)
-#
+    if x:
+        return x
+    return -1
 
 def getValues(docList, doc):
     result = []
@@ -78,6 +72,7 @@ def getValues(docList, doc):
     for key in docList.keys():
         result.append((key, docList[key][doc]))
     return result
+
 def andDocs(docList):
     intersect = []
     for i in docList.values():
@@ -90,18 +85,15 @@ def andDocs(docList):
     # print(len(intersection))
     for key in docList.keys():
         docList[key] = [i for i in docList[key] if i[0] in intersection]
-    # keys = [set(docList[i].keys())for i in range(len(docList))]
-    # intersect = set.intersection(*keys)
-    # for i in intersect:
-    #     for j in range(len(docList)):
-    #         intersectList[i].append(docList[j][i])
-    # print(intersectList)
-        # pass
 
     return docList
-def findSameDocs():
+
+def rankDocs():
+    # tf score is found at the index
+    # calculate ldf score by log(total docs / num of docs containing word)
     pass
+
 
 if __name__ == "__main__":
     # print(getPosition("master", 7))
-    querySearch("cristina lopes")
+    print(len(querySearch("cristina lopes")["cristina"]))
