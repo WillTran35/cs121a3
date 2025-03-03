@@ -6,7 +6,8 @@ from task import Task
 # from Final_Index import Final_Index
 import heapq
 from searchMethods import getPosition, getItem
-from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict
+from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, DictIndex
+import math
 
 queue = deque()
 def sortPartialIndex(partial_index):
@@ -88,8 +89,6 @@ def createFinalIndexOfIndexes():
             count += 1
 
 
-
-
 def getAllUniqueTerms(folder):
     terms = set()
     for json_file in folder.rglob("*.jsonl"):
@@ -119,23 +118,13 @@ def mergeList(fd):
         print(f"updated Index at {term}. This is term[0] = {queue[0]}")
         print("writing to file")
     result = sortByFreq(result)
+    idf_score = math.log()
     data = {"term": term, "index": result}
 
     json.dump(data, fd)
     fd.write("\n")
     print("finished writing to file")
 
-def getNumTerms(fd):
-    count = 0
-    while True:
-        try:
-            term = fd.readline()
-            if not term:
-                return count
-            count += 1
-        except Exception as e:
-            print(e)
-            return count
 
 def prioQ():
     with open(indexDict[0], "r") as a, open(indexDict[1], "r") as b, open(indexDict[2], "r") as c, \
@@ -155,7 +144,6 @@ def prioQ():
             task = Task(term, index, position, file_des.index(position))
             q.append(task)
 
-        # q = [json.loads(file.readline())["term"] for file in file_des]
         print(location)
         print(f"intial: {q}")
         heapq.heapify(q)
@@ -186,3 +174,24 @@ def prioQ():
             mergeList(g)
         # print(len(result_q))
 
+def mergeDict():
+    with open(DictIndex[0], "r") as a, open(DictIndex[1], "r") as b, open(DictIndex[2], "r") as c, \
+            open(DictIndex[3], "r") as d, open(DictIndex[4], "r") as e, open(DictIndex[5], "r") as f, \
+            open(DictIndex[6], "w") as g:
+
+        file_des = [a, b, c, d, e, f]
+        count = 0
+        for file in file_des:
+            while True:
+                line = file.readline()
+                if not line:
+                    break
+                obj = json.loads(line)
+                for key, value in obj.items():
+                    doc = key
+                    url = value
+                data = {"Doc": doc, "URL": url}
+                json.dump(data, g)
+                g.write('\n')
+                count += 1
+    print(count)

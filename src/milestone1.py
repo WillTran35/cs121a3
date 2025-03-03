@@ -7,7 +7,7 @@ from Final_Index import Final_Index
 import MergeMethods
 import searchMethods
 import time
-from constants import tokenizeline
+from constants import tokenizeline, indexDict, DictIndex
 
 def dumpToFinalIndex(words: dict):
     try:
@@ -85,13 +85,16 @@ def run():
     partial_index = {}
     idsToDict = {}
 
-
-if __name__ == "__main__":
-    start = time.time()
+def restartIndex():
     run()
     MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
     MergeMethods.prioQ()
     MergeMethods.createFinalIndexOfIndexes()
+
+if __name__ == "__main__":
+    start = time.time()
+    # restartIndex()
+    MergeMethods.mergeDict()
     x = searchMethods.querySearch("machine learning")
     # x = searchMethods.getPosition("softwar", 7)
     print(x)
