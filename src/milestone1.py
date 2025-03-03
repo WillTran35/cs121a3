@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 from Document import Document
 from Final_Index import Final_Index
 import MergeMethods
+import searchMethods
 import time
 
 def tokenizeline(line:str) -> list:
@@ -107,12 +108,13 @@ if __name__ == "__main__":
     # MergeMethods.sortJsonLkeys(Path("jsonFolder/"))
     start = time.time()
     # MergeMethods.prioQ()
-    # x = MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "stekler")
-    # print(x)
+    # x = MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "faggot")
+    x = searchMethods.getAllPositionsOfWord("shit")
+    print(x)
     # print(MergeMethods.returnJsonObjectAtPos(2, 45898))
     # MergeMethods.prioQ()
-    # end = time.time()
-    # print(end-start)
+    end = time.time()
+    print(end-start)
     # term = MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))
     # word_set = set()
     # with open("finalIndex/final_IndexFINAL.jsonl", "r") as w:
@@ -126,17 +128,17 @@ if __name__ == "__main__":
     #
     #         count += 1
     #     print(count)
-    MergeMethods.createFinalIndexOfIndexes()
-    with open("IndexOfIndexes/final-IndexOfIndexes.jsonl", "r") as w:
-        count = 1
-
-        while True:
-            line = w.readline()
-
-            if not line:
-                break
-
-            count += 1
-        print(count)
+    # MergeMethods.createFinalIndexOfIndexes()
+    # with open("IndexOfIndexes/final-IndexOfIndexes.jsonl", "r") as w:
+    #     count = 1
+    #
+    #     while True:
+    #         line = w.readline()
+    #
+    #         if not line:
+    #             break
+    #
+    #         count += 1
+    #     print(count)
 
 

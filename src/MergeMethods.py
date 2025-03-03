@@ -5,19 +5,8 @@ from pathlib import Path
 from task import Task
 # from Final_Index import Final_Index
 import heapq
-
-indexDict = {0: "jsonFolder/0-10000.jsonl", 1: "jsonFolder/10000-20000.jsonl",
-             2: "jsonFolder/20000-30000.jsonl", 3: "jsonFolder/30000-40000.jsonl",
-             4: "jsonFolder/40000-50000.jsonl", 5: "jsonFolder/45393-55393.jsonl",
-             6: "finalIndex/final_IndexFINAL.jsonl"}
-
-countDict = {"jsonFolder/0-10000.jsonl": 0, "jsonFolder/10000-20000.jsonl": 1,
-            "jsonFolder/20000-30000.jsonl": 2, "jsonFolder/30000-40000.jsonl": 3,
-             "jsonFolder/40000-50000.jsonl": 4, "jsonFolder/45393-55393.jsonl": 5}
-
-indexOfIndexDict = {"IndexOfIndexes/0-IndexOfIndexes.jsonl": 0, "IndexOfIndexes/1-IndexOfIndexes.jsonl": 1,
-                    "IndexOfIndexes/2-IndexOfIndexes.jsonl": 2, "IndexOfIndexes/3-IndexOfIndexes.jsonl": 3,
-                    "IndexOfIndexes/4-IndexOfIndexes.jsonl": 4, "IndexOfIndexes/5-IndexOfIndexes.jsonl": 5}
+from searchMethods import getPosition, getItem
+from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict
 
 queue = deque()
 def sortPartialIndex(partial_index):
@@ -111,33 +100,6 @@ def getAllUniqueTerms(folder):
 
     return terms
 
-def getAllPositionsOfWord(folder, word):
-    result = []
-    for json_file in folder.rglob("*.jsonl"):
-        # print(json_file)
-        with open(json_file, "r") as f:
-            for line in f:
-                data = json.loads(line)
-                if data["term"] == word.casefold():
-                    # print(data["term"], data["position"])
-                    result.append((indexOfIndexDict[str(json_file)], data["position"]))
-                    # print("got one")
-                    break
-
-    return result
-
-def returnJsonObjectAtPos(file_num, position):
-    with open(indexDict[file_num], "rb") as w:
-        line = linecache.getline(indexDict[file_num], position).strip()
-        # print(line)
-        return json.loads(line)["index"]
-
-
-def getLines():
-    with open(indexDict[0] ,"r") as w:
-        count = sum(1 for _ in w)
-    return count
-
 def mergeList(fd):
     result = defaultdict()
     item = queue.popleft()
@@ -167,8 +129,9 @@ def getNumTerms(fd):
     count = 0
     while True:
         try:
-            term = json.loads(fd.readline())["term"]
-            print(count, term)
+            term = fd.readline()
+            if not term:
+                return count
             count += 1
         except Exception as e:
             print(e)
