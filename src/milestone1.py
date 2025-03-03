@@ -1,4 +1,3 @@
-import re
 from nltk.stem import PorterStemmer
 import json
 from pathlib import Path
@@ -8,25 +7,7 @@ from Final_Index import Final_Index
 import MergeMethods
 import searchMethods
 import time
-
-def tokenizeline(line:str) -> list:
-    """Helper function to tokenize an individual line."""
-    # This function runs in O(n) time complexity, where n is the length of the line.
-    # It must iterate through the entire string getting each letter.
-    result = []
-    string = ""
-    line = line.lower()
-    pattern = "^[a-zA-Z0-9]"
-    for i in line:
-        if re.search(pattern, i):
-            string += i
-        else:
-            if string != "":
-                result.append(string)
-            string = ""
-    if string != "":
-        result.append(string)
-    return result
+from constants import tokenizeline
 
 def dumpToFinalIndex(words: dict):
     try:
@@ -103,42 +84,15 @@ def run():
 
 if __name__ == "__main__":
     # run()
-    # print(len(MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))))
     # MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
     # MergeMethods.sortJsonLkeys(Path("jsonFolder/"))
     start = time.time()
     # MergeMethods.prioQ()
-    # x = MergeMethods.getAllPositionsOfWord(Path("IndexOfIndexes/"), "faggot")
-    x = searchMethods.getAllPositionsOfWord("shit")
+    x = searchMethods.querySearch("machine learning")
+    # x = searchMethods.getPosition("softwar", 7)
     print(x)
-    # print(MergeMethods.returnJsonObjectAtPos(2, 45898))
-    # MergeMethods.prioQ()
     end = time.time()
     print(end-start)
-    # term = MergeMethods.getAllUniqueTerms(Path("jsonFolder/"))
-    # word_set = set()
-    # with open("finalIndex/final_IndexFINAL.jsonl", "r") as w:
-    #     count = 1
-    #
-    #     while True:
-    #         line = w.readline()
-    #
-    #         if not line:
-    #             break
-    #
-    #         count += 1
-    #     print(count)
     # MergeMethods.createFinalIndexOfIndexes()
-    # with open("IndexOfIndexes/final-IndexOfIndexes.jsonl", "r") as w:
-    #     count = 1
-    #
-    #     while True:
-    #         line = w.readline()
-    #
-    #         if not line:
-    #             break
-    #
-    #         count += 1
-    #     print(count)
 
 
