@@ -1,5 +1,7 @@
 import json
 import linecache
+from collections import defaultdict
+
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
 def getPosition(target, index):
@@ -29,11 +31,15 @@ def getPosition(target, index):
 def getItem(line):
     target = linecache.getline(indexDict[6], line)
     obj = json.loads(target)["index"]
-    return obj
+    result = []
+    # print(f"THIS IS OBJ.KEYS {obj.keys()}")
+    for i in obj.keys():
+        result.append((i, obj[i]))
+    # print(result)
+    return result
 
 
 def getAllPositionsOfWord(word):
-    result = []
     with open(indexDict[6], "r") as r, \
             open(indexDict[7], "r") as w:
 
@@ -48,23 +54,51 @@ def querySearch(query):
     stemmer = PorterStemmer()
     stemmed_tokens = [stemmer.stem(i) for i in tokenizeline(query)]
     print(f"stemmed: {stemmed_tokens}")
-    result = list(getAllPositionsOfWord(i) for i in stemmed_tokens)
+    result = {}
+    for i in stemmed_tokens:
+        if i not in result:
+            result[i] = getAllPositionsOfWord(i)
+        else:
+            result[i] += getAllPositionsOfWord(i)
+        # result[i].append(getAllPositionsOfWord(i))
+    # print(result)
     # result_sorted = sorted(result, key=lambda x: len(x[0]))w
     x = andDocs(result)
     # print(x)
-    if x:
-        print(f"got intersections: {x}")
-        return x
-    return -1
+    # if x:
+    #     print(f"got intersections: {x}")
+    #     return x
+    # return -1
     # print(result)
 #
 
+def getValues(docList, doc):
+    result = []
+    print(docList)
+    for key in docList.keys():
+        result.append((key, docList[key][doc]))
+    return result
 def andDocs(docList):
-    dictSet = [set(i.keys()) for i in docList]
-    intersect = set.intersection(*dictSet)
+    intersect = []
+    for i in docList.values():
+        x = set()
+        for j in i:
+            x.add(j[0])
+        if x:
+            intersect.append(x)
+    intersection = set.intersection(*intersect)
+    # print(len(intersection))
+    for key in docList.keys():
+        docList[key] = [i for i in docList[key] if i[0] in intersection]
+    # keys = [set(docList[i].keys())for i in range(len(docList))]
+    # intersect = set.intersection(*keys)
+    # for i in intersect:
+    #     for j in range(len(docList)):
+    #         intersectList[i].append(docList[j][i])
+    # print(intersectList)
+        # pass
 
-
-    return intersect
+    return docList
 def findSameDocs():
     pass
 
