@@ -89,15 +89,15 @@ def restartIndex():
     run()
     MergeMethods.createIndexOfIndexes(Path("jsonFolder/"))
     MergeMethods.prioQ()
+    MergeMethods.mergeDict()
     MergeMethods.createFinalIndexOfIndexes()
 
 if __name__ == "__main__":
     start = time.time()
     # restartIndex()
-    MergeMethods.mergeDict()
-    x = searchMethods.querySearch("machine learning")
+    x = searchMethods.querySearch("cristina lopes")
     # x = searchMethods.getPosition("softwar", 7)
-    print(x)
+    # print(x)
     end = time.time()
     print(end-start)
     # MergeMethods.createFinalIndexOfIndexes()

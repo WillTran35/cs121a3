@@ -1,9 +1,10 @@
 import json
 import linecache
 from collections import defaultdict
-
+import ast
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
+
 
 def getPosition(target, index):
     #  {"term": "chichiest", "position": 773775}
@@ -28,13 +29,22 @@ def getPosition(target, index):
 
     return -1
 
+def getDictFromLine(line):
+    if not line:
+        return ""
+    start = line.find('{', 10)
+    end = line.find('}', start) + 1
+    return line[start:end]
+
 
 def getItem(line):
-    target = linecache.getline(indexDict[6], line)
-    obj = json.loads(target)["index"]
+    target = linecache.getline(indexDict[9], line)
+    # obj = json.loads(target)["index"]
+    parsed_dict = getDictFromLine(target)
+    new_dict = ast.literal_eval(parsed_dict)
     result = []
-    for i in obj.keys():
-        result.append((i, obj[i]))
+    for i in new_dict.keys():
+        result.append((i, new_dict[i]))
     # print(result)
     return result
 
@@ -42,7 +52,6 @@ def getItem(line):
 def getAllPositionsOfWord(word):
     with open(indexDict[6], "r") as r, \
             open(indexDict[7], "r") as w:
-
         final_index_pos = getPosition(word, 7)
         print(f"position of {word}: {final_index_pos}")
         if final_index_pos != -1:
@@ -68,7 +77,7 @@ def querySearch(query):
 
 def getValues(docList, doc):
     result = []
-    print(docList)
+    # print(docList)
     for key in docList.keys():
         result.append((key, docList[key][doc]))
     return result
@@ -96,4 +105,5 @@ def rankDocs():
 
 if __name__ == "__main__":
     # print(getPosition("master", 7))
-    print(len(querySearch("cristina lopes")["cristina"]))
+    querySearch("cristina lopes")
+    # print(getAllPositionsOfWord("cristina"))

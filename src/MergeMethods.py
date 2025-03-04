@@ -6,7 +6,7 @@ from task import Task
 # from Final_Index import Final_Index
 import heapq
 from searchMethods import getPosition, getItem
-from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, DictIndex
+from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, DictIndex, num_docs
 import math
 
 queue = deque()
@@ -118,8 +118,8 @@ def mergeList(fd):
         print(f"updated Index at {term}. This is term[0] = {queue[0]}")
         print("writing to file")
     result = sortByFreq(result)
-    idf_score = math.log()
-    data = {"term": term, "index": result}
+    idf_score = math.log(num_docs / len(result))
+    data = {"term": term, "index": result, "idf_score" : idf_score}
 
     json.dump(data, fd)
     fd.write("\n")

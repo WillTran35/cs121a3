@@ -3,12 +3,14 @@ import re
 indexDict = {0: "jsonFolder/0-10000.jsonl", 1: "jsonFolder/10000-20000.jsonl",
              2: "jsonFolder/20000-30000.jsonl", 3: "jsonFolder/30000-40000.jsonl",
              4: "jsonFolder/40000-50000.jsonl", 5: "jsonFolder/45393-55393.jsonl",
-             6: "finalIndex/final_IndexFINAL.jsonl", 7: "IndexOfIndexes/final-IndexOfIndexes.jsonl"}
+             6: "finalIndex/final_IndexFINAL.jsonl", 7: "IndexOfIndexes/final-IndexOfIndexes.jsonl",
+             8: "IndexOfIndexes/final.txt", 9: "finalIndex/final.txt"}
 
 DictIndex = {0: "DictJsonFolder/0-10000.jsonl", 1: "DictJsonFolder/10000-20000.jsonl",
              2: "DictJsonFolder/20000-30000.jsonl", 3: "DictJsonFolder/30000-40000.jsonl",
              4: "DictJsonFolder/40000-50000.jsonl", 5: "DictJsonFolder/45393-55393.jsonl",
-             6: "DictJsonFolder/final_IndexFINAL.jsonl", 7: "DictJsonFolder/final-IndexOfIndexes.jsonl"}
+             6: "DictJsonFolder/final_IndexFINAL.jsonl", 7: "DictJsonFolder/final-IndexOfIndexes.jsonl"
+             }
 
 lengthIndexDict = {0: 37093, 1: 96755, 2: 131919, 3: 133182, 4: 752206,
                    5: 449101, 6: 1066672, 7: 1066672}
