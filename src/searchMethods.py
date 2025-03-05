@@ -16,7 +16,8 @@ def convertToTxt():
             obj = json.loads(line)
             term = obj["term"]
             index = obj["index"]
-            w.write(f'"term": \"{term}\", "index": {index}\n')
+            idf_score = obj["idf_score"]
+            w.write(f'"term": \"{term}\", "index": {index}, "idf_score": {idf_score}\n')
 
 def createIndexOfIndexesTxt():
     with open("finalIndex/final.txt", "r") as f, open("IndexOfIndexes/final.txt", "w") as w:
@@ -77,14 +78,14 @@ def getStartEnd(word):
 
 def parseIndexFromLine(line) -> dict:
     start = line.find('{')
-    end = line.find('\n')
+    end = line.find('}') + 1
     return line[start:end]
 
 def findWordIndex(word):
     with open("finalIndex/final.txt", "r") as r:
         start_end = getStartEnd(word)
         start, end = start_end[0], start_end[1]
-
+        # print("IM HEREE", start, end)
         r.seek(start)
         while r.tell() != end:
             line = r.readline()
@@ -92,8 +93,10 @@ def findWordIndex(word):
                 break
             end = line.find('"', 9)
             term = line[9:end]
+            # print("hello" , term)
             if term == word:
                 index = parseIndexFromLine(line)
+
                 return ast.literal_eval(index)
 
 def createByteIndex():
@@ -111,7 +114,7 @@ def createByteIndex():
             if char not in mydict:
                 mydict[char] = pos  # byte position
                 w.write(f'"char": {char}, "position": {pos}\n')
-
+            print("done")
 
 def querySearch(query):
     stemmer = PorterStemmer()
@@ -123,7 +126,7 @@ def querySearch(query):
             result[i] = findWordIndex(i)
         else:
             result[i] += findWordIndex(i)
-    # return (result)
+    # print (result)
     x = andDocs(result)
     if x:
         return x
@@ -132,6 +135,8 @@ def querySearch(query):
 
 def andDocs(docList):
     intersect = []
+    print(docList)
+
     for key, value in docList.items():
         intersect.append(set(value))
 
@@ -140,7 +145,7 @@ def andDocs(docList):
     # print(len(intersection))
     for key in docList.keys():
         docList[key] = [i for i in docList[key] if i in intersection]
-
+    # print("im here" , docList)
     return docList
 
 def run():
@@ -149,12 +154,15 @@ def run():
     createByteIndex()
 
 if __name__ == "__main__":
-    run()
-    start = time.time()
+    # run()
+    # convertToTxt()
     # createByteIndex()
-    result = querySearch("master of software engineering")
+    start = time.time()
+    # # createByteIndex()
+    result = querySearch("cristina lopes")
     # print(result)
-    # print(result["lope"], len(result["cristina"]))
+    # print(len(result["lope"]))
+    # # print(result["lope"], len(result["cristina"]))
     end = time.time()
     print(end-start)
     #
