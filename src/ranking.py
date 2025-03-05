@@ -18,7 +18,7 @@ def computeTF_IDFscore(intersection_list, index, idf_list):
     for key,value in sortedDict.items():
         if count == 5:
             break
-        top_five.append((key,value))
+        top_five.append((key, value))
         count += 1
     # print(top_five)
     return top_five

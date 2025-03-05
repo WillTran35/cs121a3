@@ -19,6 +19,17 @@ def convertToTxt():
             idf_score = obj["idf_score"]
             w.write(f'"term": \"{term}\", "index": {index}, "idf_score": {idf_score}\n')
 
+def convertDictJsonToTxt():
+    with open("DictJsonFolder/final_IndexFINAL.jsonl", "r") as f, open("DictJsonFolder/final_dict.txt", "w") as w:
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            obj = json.loads(line)
+            doc = obj["Doc"]
+            index = obj["URL"]
+            w.write(f'{doc}|{index}\n')
+
 def createIndexOfIndexesTxt():
     with open("finalIndex/final.txt", "r") as f, open("IndexOfIndexes/final.txt", "w") as w:
         count = 1
@@ -170,6 +181,7 @@ if __name__ == "__main__":
     # run()
     # convertToTxt()
     # createByteIndex()
+    # convertDictJsonToTxt()
     start = time.time()
     # # createByteIndex()
     result = querySearch("master of software engineering")
