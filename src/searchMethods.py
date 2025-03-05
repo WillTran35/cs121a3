@@ -1,63 +1,117 @@
 import json
-import linecache
+# import linecache
 from collections import defaultdict
 import ast
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
+import time
 
 
-def getPosition(target, index):
-    #  {"term": "chichiest", "position": 773775}
-    length = len(target)
-    start = 1
-    end = lengthIndexDict[index]  # length of index of index
+def convertToTxt():
+    with open("finalIndex/final_IndexFINAL.jsonl", "r") as f, open("finalIndex/final.txt", "w") as w:
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            obj = json.loads(line)
+            term = obj["term"]
+            index = obj["index"]
+            w.write(f'"term": \"{term}\", "index": {index}\n')
 
+def createIndexOfIndexesTxt():
+    with open("finalIndex/final.txt", "r") as f, open("IndexOfIndexes/final.txt", "w") as w:
+        count = 1
+        while True:
+            line = f.readline()
+            if not line:
+                break
+            end = line.find('"', 9)
+            term = line[9:end]
+            print(term)
+            w.write(f'"term": \"{term}\", "position": {count}\n')
+            count += 1
+
+def binarySearch(word):
+    """Binary search to find line number."""
+    mylist = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+              'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    first = word[0]
+    start = 0
+    end = len(mylist)
     while start <= end:
         mid = (start + end) // 2
-        line = linecache.getline(indexDict[index], mid)
-        final = line.find('"', 10)
-        # {"term": "mastelski", "index": {"Doc26472": 1}}
-        substr = line[10: final]
-        # print(f"substr: {substr}")
-        if substr == target:
-            position = json.loads(line)["position"]
-            return position
-        if substr > target:
-            end = mid - 1
-        else:
+        if mylist[mid] == first:
+            return mid
+        elif mylist[mid] < first:
             start = mid + 1
-
+        else:
+            end = mid - 1
     return -1
 
-def getDictFromLine(line):
-    if not line:
-        return ""
-    start = line.find('{', 10)
-    end = line.find('}', start) + 1
+def parsePositionFromLine(line):
+    """Parses "position" part from line."""
+    start = line.find('position": ')
+    end = line.find('\n')
+    return line[start + 11:end]
+
+def getStartEnd(word):
+    """Returns start of skip list and end of skip list. Using the start and end, we can seek to the start and only read
+    to the end position of final index file."""
+    position = binarySearch(word)
+    if position < 0:
+        return None
+
+    with open("IndexOfIndexes/bytes.txt", "r") as r:
+        count = 0
+        result = []
+        while count < position:
+            line = r.readline()
+            count += 1
+        line = r.readline()
+        result.append(int(parsePositionFromLine(line)))
+        # print(line, int(parsePositionFromLine(line)))
+        line = r.readline()
+        result.append(int(parsePositionFromLine(line)))
+        # print(line, int(parsePositionFromLine(line)))
+        return result
+
+def parseIndexFromLine(line) -> dict:
+    start = line.find('{')
+    end = line.find('\n')
     return line[start:end]
 
+def findWordIndex(word):
+    with open("finalIndex/final.txt", "r") as r:
+        start_end = getStartEnd(word)
+        start, end = start_end[0], start_end[1]
 
-def getItem(line):
-    target = linecache.getline(indexDict[9], line)
-    # obj = json.loads(target)["index"]
-    parsed_dict = getDictFromLine(target)
-    new_dict = ast.literal_eval(parsed_dict)
-    result = []
-    for i in new_dict.keys():
-        result.append((i, new_dict[i]))
-    # print(result)
-    return result
+        r.seek(start)
+        while r.tell() != end:
+            line = r.readline()
+            if not line:
+                break
+            end = line.find('"', 9)
+            term = line[9:end]
+            if term == word:
+                index = parseIndexFromLine(line)
+                return ast.literal_eval(index)
 
+def createByteIndex():
+    with open(indexDict[9], "r") as r, open("IndexOfIndexes/bytes.txt", "w") as w:
+        mydict = {}
+        while True:
+            pos = r.tell()
+            line = r.readline()
+            if not line:
+                break
+            start = line.find('"', 8) + 1
+            end = line.find('"', start)
+            term = line[start:end]
+            char = term[0]
+            if char not in mydict:
+                mydict[char] = pos  # byte position
+                w.write(f'"char": {char}, "position": {pos}\n')
 
-def getAllPositionsOfWord(word):
-    with open(indexDict[6], "r") as r, \
-            open(indexDict[7], "r") as w:
-        final_index_pos = getPosition(word, 7)
-        print(f"position of {word}: {final_index_pos}")
-        if final_index_pos != -1:
-            # print(f"item of {word}: {getItem(final_index_pos)}")
-            return getItem(final_index_pos)
-        return -1
 
 def querySearch(query):
     stemmer = PorterStemmer()
@@ -66,44 +120,42 @@ def querySearch(query):
     result = {}
     for i in stemmed_tokens:
         if i not in result:
-            result[i] = getAllPositionsOfWord(i)
+            result[i] = findWordIndex(i)
         else:
-            result[i] += getAllPositionsOfWord(i)
-    # print(result)
+            result[i] += findWordIndex(i)
+    # return (result)
     x = andDocs(result)
     if x:
         return x
     return -1
 
-def getValues(docList, doc):
-    result = []
-    # print(docList)
-    for key in docList.keys():
-        result.append((key, docList[key][doc]))
-    return result
 
 def andDocs(docList):
     intersect = []
-    for i in docList.values():
-        x = set()
-        for j in i:
-            x.add(j[0])
-        if x:
-            intersect.append(x)
+    for key, value in docList.items():
+        intersect.append(set(value))
+
     intersection = set.intersection(*intersect)
+    # print(f"INTERSECTION {intersection}")
     # print(len(intersection))
     for key in docList.keys():
-        docList[key] = [i for i in docList[key] if i[0] in intersection]
+        docList[key] = [i for i in docList[key] if i in intersection]
 
     return docList
 
-def rankDocs():
-    # tf score is found at the index
-    # calculate ldf score by log(total docs / num of docs containing word)
-    pass
-
+def run():
+    convertToTxt()
+    createIndexOfIndexesTxt()
+    createByteIndex()
 
 if __name__ == "__main__":
-    # print(getPosition("master", 7))
-    querySearch("cristina lopes")
-    # print(getAllPositionsOfWord("cristina"))
+    run()
+    start = time.time()
+    # createByteIndex()
+    result = querySearch("master of software engineering")
+    # print(result)
+    # print(result["lope"], len(result["cristina"]))
+    end = time.time()
+    print(end-start)
+    #
+

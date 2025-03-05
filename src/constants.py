@@ -13,7 +13,7 @@ DictIndex = {0: "DictJsonFolder/0-10000.jsonl", 1: "DictJsonFolder/10000-20000.j
              }
 
 lengthIndexDict = {0: 37093, 1: 96755, 2: 131919, 3: 133182, 4: 752206,
-                   5: 449101, 6: 1066672, 7: 1066672}
+                   5: 449101, 6: 1066672, 7: 1066672, 8: 1066672}
 
 countDict = {"jsonFolder/0-10000.jsonl": 0, "jsonFolder/10000-20000.jsonl": 1,
             "jsonFolder/20000-30000.jsonl": 2, "jsonFolder/30000-40000.jsonl": 3,
