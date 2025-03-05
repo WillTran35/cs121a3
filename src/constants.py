@@ -61,5 +61,9 @@ def getCurrentNumDocs():
 
 num_docs = getCurrentNumDocs()
 
+def sortByFreq(mydict):
+    x = list(mydict.values())
+    return dict(sorted(mydict.items(), key=lambda x: x[1], reverse=True))
+
 if __name__ == "__main__":
     print(getCurrentNumDocs())

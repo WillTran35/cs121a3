@@ -5,8 +5,8 @@ import ast
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
 import time
-
-
+from ranking import computeTF_IDFscore
+from MergeMethods import sortByFreq
 def convertToTxt():
     with open("finalIndex/final_IndexFINAL.jsonl", "r") as f, open("finalIndex/final.txt", "w") as w:
         while True:
@@ -81,6 +81,12 @@ def parseIndexFromLine(line) -> dict:
     end = line.find('}') + 1
     return line[start:end]
 
+def parseIDFscore(line):
+#     {"term": "cristoforo", "index": {"Doc46591": 5.101405743366643e-07}, "idf_score": 10.922208510961449}
+    start = line.find("idf_score") + 12
+    end = line.find("}", start)
+    return line[start:end]
+
 def findWordIndex(word):
     with open("finalIndex/final.txt", "r") as r:
         start_end = getStartEnd(word)
@@ -96,8 +102,8 @@ def findWordIndex(word):
             # print("hello" , term)
             if term == word:
                 index = parseIndexFromLine(line)
-
-                return ast.literal_eval(index)
+                idf_score = parseIDFscore(line)
+                return ast.literal_eval(index), float(idf_score)
 
 def createByteIndex():
     with open(indexDict[9], "r") as r, open("IndexOfIndexes/bytes.txt", "w") as w:
@@ -121,21 +127,26 @@ def querySearch(query):
     stemmed_tokens = [stemmer.stem(i) for i in tokenizeline(query)]
     print(f"stemmed: {stemmed_tokens}")
     result = {}
+    idf_scores = {}
     for i in stemmed_tokens:
         if i not in result:
-            result[i] = findWordIndex(i)
+            result[i] = findWordIndex(i)[0]
+
         else:
-            result[i] += findWordIndex(i)
+            result[i] += findWordIndex(i)[0]
+
+        idf_scores[i] = findWordIndex(i)[1]
+    print(idf_scores)
     # print (result)
-    x = andDocs(result)
+    x = andDocs(result, idf_scores)
     if x:
         return x
     return -1
 
 
-def andDocs(docList):
+def andDocs(docList, idf_scores):
     intersect = []
-    print(docList)
+    # print(docList)
 
     for key, value in docList.items():
         intersect.append(set(value))
@@ -144,9 +155,11 @@ def andDocs(docList):
     # print(f"INTERSECTION {intersection}")
     # print(len(intersection))
     for key in docList.keys():
-        docList[key] = [i for i in docList[key] if i in intersection]
-    # print("im here" , docList)
-    return docList
+        # print(docList[key])
+        docList[key] = {i: docList[key][i] for i in docList[key] if i in intersection}
+    # print(docList)
+    result = computeTF_IDFscore(intersection, docList, idf_scores)
+    return result
 
 def run():
     convertToTxt()
@@ -159,9 +172,9 @@ if __name__ == "__main__":
     # createByteIndex()
     start = time.time()
     # # createByteIndex()
-    result = querySearch("cristina lopes")
-    # print(result)
-    # print(len(result["lope"]))
+    result = querySearch("master of software engineering")
+    print(result)
+    # print(len(result["machin"]))
     # # print(result["lope"], len(result["cristina"]))
     end = time.time()
     print(end-start)

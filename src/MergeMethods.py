@@ -5,8 +5,7 @@ from pathlib import Path
 from task import Task
 # from Final_Index import Final_Index
 import heapq
-from searchMethods import getPosition, getItem
-from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, DictIndex, num_docs
+from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, DictIndex, num_docs, sortByFreq
 import math
 
 queue = deque()
@@ -70,9 +69,6 @@ def createIndexOfIndexes(folder):
                     a.write('\n')
             # count += 1
 
-def sortByFreq(mydict):
-    x = list(mydict.values())
-    return dict(sorted(mydict.items(), key=lambda x: x[1], reverse=True))
 
 def createFinalIndexOfIndexes():
     with open("finalIndex/final_IndexFINAL.jsonl", "r") as a,\
