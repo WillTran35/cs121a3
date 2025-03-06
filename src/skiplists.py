@@ -74,9 +74,10 @@ def createSkipList():
                 w.write(string)
 
 
+def run():
+    splitIndex()
+    createSkipList()
 
 
 if __name__ == "__main__":
-    createSkipList()
-    # countLines()
-    # splitIndex()
+    run()

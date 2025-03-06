@@ -69,23 +69,20 @@ def parsePositionFromLine(line):
 def getStartEnd(word):
     """Returns start of skip list and end of skip list. Using the start and end, we can seek to the start and only read
     to the end position of final index file."""
-    position = binarySearch(word)
-    if position < 0:
-        return None
-
-    with open("IndexOfIndexes/bytes.txt", "r") as r:
-        count = 0
-        result = []
-        while count < position:
+    with open(f"SkipLists/{word[0]}_skiplist.txt", "r") as r:
+        prev = 0
+        while True:
             line = r.readline()
-            count += 1
-        line = r.readline()
-        result.append(int(parsePositionFromLine(line)))
-        # print(line, int(parsePositionFromLine(line)))
-        line = r.readline()
-        result.append(int(parsePositionFromLine(line)))
-        # print(line, int(parsePositionFromLine(line)))
-        return result
+            if not line:
+                break
+            term = line[0:line.find('|')]
+            pos_start = line.find('|') + 1
+            pos_end = line.find('\n')
+            position = int(line[pos_start:pos_end])
+            if word > term:
+                prev = position
+            elif word <= term:
+                return prev, position
 
 def parseIndexFromLine(line) -> dict:
     start = line.find('{')
@@ -99,7 +96,7 @@ def parseIDFscore(line):
     return line[start:end]
 
 def findWordIndex(word):
-    with open("finalIndex/final.txt", "r") as r:
+    with open(f"Indexes/{word[0]}_index.txt", "r") as r:
         start_end = getStartEnd(word)
         start, end = start_end[0], start_end[1]
         # print("IM HEREE", start, end)
@@ -182,13 +179,14 @@ if __name__ == "__main__":
     # convertToTxt()
     # createByteIndex()
     # convertDictJsonToTxt()
-    start = time.time()
-    # # createByteIndex()
-    result = querySearch("master of software engineering")
-    print(result)
-    # print(len(result["machin"]))
-    # # print(result["lope"], len(result["cristina"]))
-    end = time.time()
-    print(end-start)
+    print(getStartEnd("hello"))
+    # start = time.time()
+    # # # createByteIndex()
+    # result = querySearch("master of software engineering")
+    # print(result)
+    # # print(len(result["machin"]))
+    # # # print(result["lope"], len(result["cristina"]))
+    # end = time.time()
+    # print(end-start)
     #
 
