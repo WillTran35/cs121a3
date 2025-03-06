@@ -49,7 +49,7 @@ def countLines():
     print(sortByFreq(count))
 
 def createSkipList():
-
+    pass
 if __name__ == "__main__":
     # createSkipList()
     splitIndex()
