@@ -23,19 +23,19 @@ def splitIndex():
             else:
 #                 dump to file, clear string
                 print(letters)
-                with open(f"SkipLists/{letters[-1]}_index.txt", "w") as w:
+                with open(f"Indexes/{letters[-1]}_index.txt", "w") as w:
                     w.write(string)
                     print(f"wrote {letters[-1]}")
                     letters.append(term[0])
                     string = f"{term}|{index}|{idf}\n"
         if string:
-            with open(f"SkipLists/{term[0]}_index.txt", "w") as w:
+            with open(f"Indexes/{term[0]}_index.txt", "w") as w:
                 w.write(string)
                 print(f"wrote {letters[-1]}")
                 letters.append(term[0])
 
 def countLines():
-    folder = Path("SkipLists/")
+    folder = Path("Indexes/")
     count = {}
     for file in folder.rglob("*.txt"):
         with open(file,"r") as r:
@@ -46,10 +46,37 @@ def countLines():
                     break
                 length += 1
             count[file.name] = length
-    print(sortByFreq(count))
+    return sortByFreq(count)
 
 def createSkipList():
-    pass
+    folder = Path("Indexes/")
+
+    for file in folder.rglob("*.txt"):
+        with open(file, "r") as r:
+            count = 1
+            num_lines = countLines()[file.name]
+            print(num_lines)
+            string = ""
+            while True:
+                line = r.readline()
+                position = r.tell()
+                if not line:
+                    break
+                word = line[0:line.find("|")]
+                # print(word)
+                if count % 1000 == 0 or count == 1:
+                    string += f"{word}|{position}\n"
+                elif count == num_lines:
+                    string += f"{word}|{position}\n"
+                    print(f"im here {count}")
+                count += 1
+            with open(f"SkipLists/{file.name[0]}_skiplist.txt", "w") as w:
+                w.write(string)
+
+
+
+
 if __name__ == "__main__":
-    # createSkipList()
-    splitIndex()
+    createSkipList()
+    # countLines()
+    # splitIndex()
