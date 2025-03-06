@@ -149,10 +149,10 @@ def querySearch(query):
         idf_scores[i] = findWordIndex(i)[1]
     print(idf_scores)
     # print (result)
-    x = andDocs(result, idf_scores)
-    if x:
-        return x
-    return -1
+    # x = andDocs(result, idf_scores)
+    # if x:
+    #     return x
+    # return -1
 
 
 def andDocs(docList, idf_scores):
