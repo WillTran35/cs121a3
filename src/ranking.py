@@ -1,5 +1,16 @@
 from constants import sortByFreq
 
+def findURL(docID):
+    with open("DictJsonFolder/final_dict.txt") as w:
+        while True:
+            line = w.readline()
+            if not line:
+                break
+            doc = line.split('|')[0]
+            if doc == docID:
+                return line.split('|')[1][:line.split('|')[1].find('\n')]
+
+
 def computeTF_IDFscore(intersection_list, index, idf_list):
     # tf given in index
     # get idf score from final index
@@ -9,7 +20,7 @@ def computeTF_IDFscore(intersection_list, index, idf_list):
     for i in intersection_list:
         sum = 0
         for key in index.keys():
-            tf_idf_score = index[key][i] * idf_list[key]
+            tf_idf_score = round(index[key][i] * idf_list[key],5)
             sum += tf_idf_score
         mydict[i] = sum
     sortedDict = sortByFreq(mydict)

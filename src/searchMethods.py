@@ -2,7 +2,7 @@ import json
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
 import time
-from ranking import computeTF_IDFscore
+from ranking import computeTF_IDFscore, findURL
 from MergeMethods import sortByFreq
 def convertToTxt():
     with open("finalIndex/final_IndexFINAL.jsonl", "r") as f, open("finalIndex/final.txt", "w") as w:
@@ -149,7 +149,12 @@ def andDocs(docList, idf_scores, start):
     end = time.time()
     print(end - start)
     result = computeTF_IDFscore(intersection, docList, idf_scores)
-    return result
+    new_result = []
+    for i in result:
+        doc_url = findURL(i[0])
+        idf_score = i[1]
+        new_result.append((doc_url, idf_score))
+    return new_result
 
 def run():
     convertToTxt()
@@ -157,7 +162,7 @@ def run():
 
 if __name__ == "__main__":
 
-    result = querySearch("hello bitch how are you doing im in the bay")
+    result = querySearch("research university where people generally get along")
     print(result)
     # print(len(result["machin"]))
     # # # print(result["lope"], len(result["cristina"]))
