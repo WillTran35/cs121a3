@@ -5,26 +5,38 @@ from bs4 import BeautifulSoup
 from Document import Document
 from Final_Index import Final_Index
 import MergeMethods
-import searchMethods
 import time
-from constants import tokenizeline, indexDict, DictIndex
+from constants import tokenizeline, indexDict, DictIndex, important
 
-def dumpToFinalIndex(words: dict):
-    try:
-        with open("../results.json", "w") as f:
-            json.dump(words, f, indent=4)
-    except Exception as e :
-        print(e)
+def parseImportantWords(html, encoding):
+    soup = BeautifulSoup(html, "html.parser", from_encoding=encoding)
 
-def parseHTML(html: str, encoding):
+    result = []
+    for script in soup.find_all(["h1", "h2", "h3", "h4", "h5", "h6", "b", "strong", "title"]):
+        text = script.get_text()
+        result.append()
+    return result
+
+
+def parseHTML(html: str, encoding) -> str:
     soup = BeautifulSoup(html, "html.parser", from_encoding=encoding)
 
     for script in soup(["script", "style"]):
         script.decompose()
 
-    text = soup.get_text(separator=" ", strip=True)
+    result = []
+    for text in soup.find_all(string=True):
+        parent = text.parent.name
+        clean_text = text.strip().split()
 
-    return text
+        if parent in important:
+            for i in range(important[parent]):
+                result += clean_text
+        else:
+            result += clean_text
+
+    result = " ".join(result)
+    return result
 
 def run():
     # for each document parse the json file
@@ -62,9 +74,8 @@ def run():
                 newDoc.getTokensAndFreq()[i] = newDoc.getTokensAndFreq().get(i, 0) + 1  # document dict has token
                 # as key and frequency as value
 
-
             for i in newDoc.getTokensAndFreq().keys():
-                newDoc.getTokensAndFreq()[i] = newDoc.getFrequencyOfToken(i) / length_of_doc  # tf score
+                newDoc.getTokensAndFreq()[i] = round(newDoc.getFrequencyOfToken(i) / length_of_doc, 5)  # tf score
                 if i not in partial_index:
                     partial_index[i] = [newDoc]
                 else:
@@ -93,13 +104,13 @@ def restartIndex():
     MergeMethods.createFinalIndexOfIndexes()
 
 if __name__ == "__main__":
-    start = time.time()
-    # restartIndex()
-    x = searchMethods.querySearch("of of the the a a a")
+    # start = time.time()
+    restartIndex()
+    # x = searchMethods.querySearch("where is uci can i go there")
     # x = searchMethods.getPosition("softwar", 7)
     # print(x)
-    end = time.time()
-    print(end-start)
+    # end = time.time()
+    # print(end-start)
     # MergeMethods.createFinalIndexOfIndexes()
 
 

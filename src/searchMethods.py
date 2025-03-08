@@ -1,7 +1,4 @@
 import json
-# import linecache
-from collections import defaultdict
-import ast
 from constants import indexDict, lengthIndexDict, countDict, indexOfIndexDict, tokenizeline
 from nltk.stem import PorterStemmer
 import time
@@ -159,14 +156,8 @@ def run():
     createIndexOfIndexesTxt()
 
 if __name__ == "__main__":
-    # run()
-    # convertToTxt()
-    # createByteIndex()
-    # convertDictJsonToTxt()
-    # print(getStartEnd("zzzzzzzzzz"))
-    # start = time.time()
-    # # # createByteIndex()
-    result = querySearch("cristina cristina lopes")
+
+    result = querySearch("hello bitch how are you doing im in the bay")
     print(result)
     # print(len(result["machin"]))
     # # # print(result["lope"], len(result["cristina"]))
