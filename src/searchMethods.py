@@ -124,7 +124,7 @@ def querySearch(query):
         if i not in result:
             result[i] = index
         else:
-            result[i] += index
+            result[i].update(index)
 
         idf_scores[i] = idf_score
     # print(idf_scores)
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     # print(getStartEnd("zzzzzzzzzz"))
     # start = time.time()
     # # # createByteIndex()
-    result = querySearch("master of software engineering")
+    result = querySearch("cristina cristina lopes")
     print(result)
     # print(len(result["machin"]))
     # # # print(result["lope"], len(result["cristina"]))

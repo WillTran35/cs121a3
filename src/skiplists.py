@@ -64,7 +64,7 @@ def createSkipList():
                     break
                 word = line[0:line.find("|")]
                 # print(word)
-                if count % 250 == 0 or count == 1:
+                if count % 1000 == 0 or count == 1:
                     string += f"{word}|{position}\n"
                 elif count == num_lines:
                     string += f"{word}|{position}\n"

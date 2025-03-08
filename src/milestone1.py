@@ -95,7 +95,7 @@ def restartIndex():
 if __name__ == "__main__":
     start = time.time()
     # restartIndex()
-    x = searchMethods.querySearch("master of software engineering")
+    x = searchMethods.querySearch("of of the the a a a")
     # x = searchMethods.getPosition("softwar", 7)
     # print(x)
     end = time.time()
