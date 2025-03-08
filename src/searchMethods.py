@@ -80,6 +80,19 @@ def parseIDFscore(line):
     end = line.find("\n")
     return line[start + 1:end]
 
+def parseIndex(line):
+    new = line[1:-1]
+    splitted = new.split(", ")
+
+    docids = {}
+    for i in splitted:
+        doc = i.split(":")[0][1:-1]
+        end = i.split(":")[1][:i.split(":")[1].find('}')]
+        freq = float(end)
+        docids[doc] = freq
+
+    return docids
+
 def findWordIndex(word):
     with open(f"Indexes/{word[0]}_index.txt", "r") as r:
         start_end = getStartEnd(word)
@@ -93,10 +106,11 @@ def findWordIndex(word):
             final = line.find("|")
             term = line[0:final]
             # print("hello" , term)
+            # print(term)
             if term == word:
-                index = parseIndexFromLine(line)
+                index = parseIndex(line)
                 idf_score = parseIDFscore(line)
-                return ast.literal_eval(index), float(idf_score)
+                return index, float(idf_score)
 
 def querySearch(query):
     start = time.time()
@@ -106,24 +120,22 @@ def querySearch(query):
     result = {}
     idf_scores = {}
     for i in stemmed_tokens:
+        index, idf_score = findWordIndex(i)[0], findWordIndex(i)[1]
         if i not in result:
-            result[i] = findWordIndex(i)[0]
-
+            result[i] = index
         else:
-            result[i] += findWordIndex(i)[0]
+            result[i] += index
 
-        idf_scores[i] = findWordIndex(i)[1]
+        idf_scores[i] = idf_score
     # print(idf_scores)
     # print (result)
-    end = time.time()
-    print(end-start)
-    x = andDocs(result, idf_scores)
+    x = andDocs(result, idf_scores,start)
     if x:
         return x
     return -1
 
 
-def andDocs(docList, idf_scores):
+def andDocs(docList, idf_scores, start):
     intersect = []
     # print(docList)
 
@@ -137,13 +149,14 @@ def andDocs(docList, idf_scores):
         # print(docList[key])
         docList[key] = {i: docList[key][i] for i in docList[key] if i in intersection}
     # print(docList)
+    end = time.time()
+    print(end - start)
     result = computeTF_IDFscore(intersection, docList, idf_scores)
     return result
 
 def run():
     convertToTxt()
     createIndexOfIndexesTxt()
-    createByteIndex()
 
 if __name__ == "__main__":
     # run()
@@ -153,7 +166,7 @@ if __name__ == "__main__":
     # print(getStartEnd("zzzzzzzzzz"))
     # start = time.time()
     # # # createByteIndex()
-    result = querySearch("hello")
+    result = querySearch("master of software engineering")
     print(result)
     # print(len(result["machin"]))
     # # # print(result["lope"], len(result["cristina"]))
