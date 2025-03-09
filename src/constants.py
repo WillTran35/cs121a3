@@ -23,16 +23,27 @@ indexOfIndexDict = {"IndexOfIndexes/0-IndexOfIndexes.jsonl": 0, "IndexOfIndexes/
                     "IndexOfIndexes/2-IndexOfIndexes.jsonl": 2, "IndexOfIndexes/3-IndexOfIndexes.jsonl": 3,
                     "IndexOfIndexes/4-IndexOfIndexes.jsonl": 4, "IndexOfIndexes/5-IndexOfIndexes.jsonl": 5}
 
+# important = {
+#         "title": 5,
+#         "h1": 5,
+#         "h2": 4,
+#         "strong": 4,
+#         "h3": 3,
+#         "b": 3,
+#         "h4": 2,
+#         "h5": 2,
+#         "h6": 2
+#     }
 important = {
-        "title": 5,
-        "h1": 5,
-        "h2": 4,
-        "strong": 4,
-        "h3": 3,
-        "b": 3,
-        "h4": 2,
-        "h5": 2,
-        "h6": 2
+        "title": 1,
+        "h1": 1,
+        "h2": 1,
+        "strong": 1,
+        "h3": 1,
+        "b": 1,
+        "h4": 1,
+        "h5": 1,
+        "h6": 1
     }
 def getNumTerms(fd):
     count = 0

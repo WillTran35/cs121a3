@@ -110,6 +110,7 @@ def findWordIndex(word):
                 return index, float(idf_score)
 
 def querySearch(query):
+    print(f"Query: {query}")
     start = time.time()
     stemmer = PorterStemmer()
     stemmed_tokens = [stemmer.stem(i) for i in tokenizeline(query)]
@@ -162,11 +163,7 @@ def run():
 
 if __name__ == "__main__":
 
-    result = querySearch("research university where people generally get along")
+    result = querySearch("and this haha and and and and and  and and and and and")
     print(result)
-    # print(len(result["machin"]))
-    # # # print(result["lope"], len(result["cristina"]))
-    end = time.time()
-    # print(end-start)
-    #
+
 
